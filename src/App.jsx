@@ -1,12 +1,19 @@
+import { Provider } from 'react-redux';
 import './App.css';
-import {Typography} from '@mui/material'
+import JobCard from './components/JobCard';
+import SearchBarFilters from './components/SearchBarFilters';
+import store from './store';
 
 
 function App() {
   return (
-    <Typography>
-      Hello
-    </Typography>
+    <>
+    <Provider store={store}>
+    <SearchBarFilters/>
+    <JobCard/>
+    </Provider>
+     
+    </>
   
   );
 }
