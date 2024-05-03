@@ -45,11 +45,11 @@ const SearchBarFilters = () => {
   const renderTags = (value, getTagProps) =>
     value.map((option, index) => (
       <Chip
-      
+        
         key={index}
         label={option.subgroup}
         {...getTagProps({ index })}
-        deleteIcon={<svg height="14" width="14" viewBox="0 0 20 20" aria-hidden="true" focusable="false" class="css-8mmkcg"><path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path></svg>}
+        deleteIcon={<svg height="14" width="14" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path></svg>}
         sx={{ mr: 1, mb: 1, borderRadius: '4px', backgroundColor: '#e0e0e0',
         '& .MuiChip-deleteIcon': {
           color: 'transparent', // Change color of the delete icon (cross button) to orange
@@ -65,7 +65,7 @@ const SearchBarFilters = () => {
     ));
   
 
-  const width = `${selectedSubgroups.length * 120}px`;
+  const width = `${selectedSubgroups.length + 160}px`;
   
   return (
     <>
@@ -84,12 +84,11 @@ const SearchBarFilters = () => {
       options={options}
       getOptionLabel={(option) => option.subgroup}
       sx={{
-        minWidth:'138px', 
+        minWidth:'210px', 
         width: width, // Adjust width based on number of selected subgroups
         minHeight: '38px',
         borderRadius: '4px',
         display: 'inline-flex', // Display selected items horizontally
-        // flexWrap: 'wrap', // Wrap items to next line if they exceed container width
         gap: '8px', // Spacing between selected items
       }}
       renderInput={(params) => <TextField {...params} label="Roles" />}
