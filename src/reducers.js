@@ -1,5 +1,5 @@
 // reducers.js
-import { UPDATE_FILTERS } from './actions';
+import { UPDATE_FILTERS } from "./actions";
 
 const initialState = {
   data: null,
@@ -16,25 +16,24 @@ const initialState = {
 };
 
 const reducer = (state = initialState, action) => {
-    console.log('action:::    ',action)
-    switch (action.type) {
-      case "FETCH_DATA_SUCCESS":
-        return {
-          ...state,
-          data: [...(state?.data || []), ...action?.payload],
-          offset: action.offset,
-          isLoading: false,
-        };
-      case "FETCH_DATA_FAILURE":
-        return { ...state, error: action.payload, isLoading: false };
-      case UPDATE_FILTERS:
-        return {
-          ...state,
-          filters: { ...state.filters, ...action.payload },
-        };
-      default:
-        return state;
-    }
+  switch (action.type) {
+    case "FETCH_DATA_SUCCESS":
+      return {
+        ...state,
+        data: [...(state?.data || []), ...action?.payload],
+        offset: action.offset,
+        isLoading: false,
+      };
+    case "FETCH_DATA_FAILURE":
+      return { ...state, error: action.payload, isLoading: false };
+    case UPDATE_FILTERS:
+      return {
+        ...state,
+        filters: { ...state.filters, ...action.payload },
+      };
+    default:
+      return state;
+  }
 };
 
 export default reducer;
