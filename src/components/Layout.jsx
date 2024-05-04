@@ -1,11 +1,12 @@
-import { Grid } from '@mui/material'
+import { Box, Grid } from '@mui/material'
 import React from 'react'
 import SearchBarFilters from './SearchBarFilters'
 import JobCard from './JobCard'
 
 const Layout = () => {
   return (
-    <Grid container margin={10}> {/* Apply padding to the Grid container */}
+    <Box display={'flex'} justifyContent={'center'}>
+        <Grid container margin={15} > {/* Apply padding to the Grid container */}
     <Grid item xs={12} mt={4}>
       <SearchBarFilters /> {/* Wrap SearchBarFilters component inside a Grid item */}
     </Grid>
@@ -13,6 +14,9 @@ const Layout = () => {
       <JobCard />
     </Grid>
   </Grid>
+
+    </Box>
+    
   )
 }
 
