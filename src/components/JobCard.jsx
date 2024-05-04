@@ -1,7 +1,7 @@
 // YourComponent.js
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import fetchData from "../actions";
+import fetchData from "../store/actions";
 import {
   Box,
   Button,
@@ -11,44 +11,14 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-import { updateFilters } from "../actions";
+import { updateFilters } from "../store/actions";
+import { useFilterJobs } from "../hooks/FilterHook";
 
 const JobCard = () => {
   const dispatch = useDispatch();
-  const { data, offset, filters } = useSelector((state) => state);
+  const { data, offset } = useSelector((state) => state);
 
-  const filteredListings = data?.filter((listing) => {
-    console.log(
-      filters.location &&
-        listing.location.toLowerCase().includes(filters.location)
-    );
-    console.log(listing.location, filters.location);
-    // Implement filtering logic based on filters object
-    return (
-      (!filters.minExp || listing.minExp <= filters.minExp) &&
-      (!filters.jobRole.length ||
-        filters.jobRole.some(
-          (jobRole) => jobRole?.toLowerCase() === listing.jobRole?.toLowerCase()
-        )) &&
-      (!filters.companyName ||
-        listing.companyName
-          .toLowerCase()
-          .includes(filters.companyName.toLowerCase())) &&
-      ((!filters.remote.length && !filters.location) ||
-        filters.remote.some((location) =>
-          location?.toLowerCase() === "in-office"
-            ? listing.location?.toLowerCase() !== "remote"
-            : location?.toLowerCase() === listing.location?.toLowerCase()
-        ) ||
-        (filters.location &&
-          listing.location
-            .toLowerCase()
-            .includes(filters.location.toLowerCase()))) &&
-      (!filters.minJdSalary ||
-        listing.minJdSalary >= filters.minJdSalary ||
-        listing.maxJdSalary >= filters.minJdSalary)
-    );
-  });
+  const filteredListings = useFilterJobs(data)
 
   const lastJobCardRef = useRef();
 
@@ -141,16 +111,14 @@ const JobCard = () => {
                     : `${jd.maxJdSalary}K ${jd.salaryCurrencyCode}`}{" "}
                   ⚠️
                 </Typography>
-
-                <Typography fontSize={16} fontWeight={600}>
-                  About Company:
-                </Typography>
                 <Typography fontSize={16} fontWeight={700}>
                   About us:
                 </Typography>
-                <Typography fontSize={"14px"}>
-                  {jd.jobDetailsFromCompany.slice(0, 450)}
+                  <Typography fontSize={"14px"}>
+                  { jd.minExp?(jd.jobDetailsFromCompany.slice(0, 500)):(jd.jobDetailsFromCompany.slice(0, 590))}
                 </Typography>
+
+                
                 <Button
                   disableFocusRipple="true"
                   disableTouchRipple="true"
@@ -161,8 +129,6 @@ const JobCard = () => {
                     fontSize: "15px",
                     color: "4943DA",
                     boxShadow: "-18px -20px 18px 0px white",
-                    // boxShadow:
-                    //   "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
                     textTransform: "none",
                     "&.MuiButtonBase-root:hover": {
                       bgcolor: "transparent",
@@ -190,19 +156,8 @@ const JobCard = () => {
                   </>
                 ) : (
                   <>
-                    <Typography
-                      fontSize={"13px"}
-                      color={"#8b8b8b"}
-                      variant="h6"
-                      fontWeight={600}
-                      letterSpacing={"1px"}
-                    >
-                      Minimum Experience
-                    </Typography>
+                     
 
-                    <Typography fontSize={"14px"} fontWeight={400}>
-                      {jd.minExp} years
-                    </Typography>
                   </>
                 )}
                 <Button

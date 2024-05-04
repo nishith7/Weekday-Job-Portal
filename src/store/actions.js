@@ -1,4 +1,4 @@
-// actions.js
+//API call to fetch the data
 const fetchData = (offset) => {
   return async (dispatch) => {
     try {
@@ -32,9 +32,9 @@ const fetchData = (offset) => {
   };
 };
 
-// actions.js
 export const UPDATE_FILTERS = "UPDATE_FILTERS";
 
+// action for filter
 export const updateFilters = (filters) => ({
   type: UPDATE_FILTERS,
   payload: filters,

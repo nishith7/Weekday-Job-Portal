@@ -1,85 +1,33 @@
-import { Autocomplete, Chip, Grid, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Badge,
+  Chip,
+  Grid,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { styled, lighten, darken } from "@mui/system";
-import { useSelector, useDispatch } from "react-redux";
-import { updateFilters } from "../actions";
+import { useDispatch } from "react-redux";
+import {
+  optionsForRemote,
+  optionsForExperience,
+  optionsForMinSalary,
+  jobRoleList,
+} from "../utils/strings";
+import { updateFilters } from "../store/actions";
 
-const GroupHeader = styled("div")(({ theme }) => ({
-  position: "sticky",
-  top: "-8px",
-  padding: "4px 10px",
-  color: theme.palette.primary.main,
-  backgroundColor:
-    theme.palette.mode === "light"
-      ? lighten(theme.palette.primary.light, 0.85)
-      : darken(theme.palette.primary.main, 0.8),
-}));
-
-const GroupItems = styled("ul")({
-  padding: 0,
-});
-
-const menuList = [
-  {
-    subGroupTitle: "ENGINEERING",
-    subGroupList: ["Backend", "Frontend", "FullStack"],
-  },
-  {
-    subGroupTitle: "HR",
-    subGroupList: ["Hr"],
-  },
-];
-
-const optionsForNumberOfEmployees = [
-  "1-10",
-  "11-20",
-  "21-50",
-  "51-100",
-  "101-200",
-  "201-500",
-  "500+",
-];
-
-const optionsForExperience = [
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-];
-
-const optionsForRemote = ["Remote", "Hybrid", "In-Office"];
-
-const optionsForMinSalary = [
-  "10K",
-  "20K",
-  "30K",
-  "40K",
-  "50K",
-  "60K",
-  "70K",
-  "80K",
-  "90K",
-  "100K",
-  "120K",
-  "150K",
-  "200K",
-];
 const SearchBarFilters = () => {
   const dispatch = useDispatch();
 
-  const options = menuList.flatMap((item) =>
+  // flattens the jobRoleList into a new array
+  const options = jobRoleList.flatMap((item) =>
     item.subGroupList.map((subgroup) => ({
       group: item.subGroupTitle,
       subgroup,
     }))
   );
 
+  //  initialize state for filtering
   const [selectedFilter, setSelectedFilters] = useState({
     minExp: null,
     jobRole: [],
@@ -90,17 +38,19 @@ const SearchBarFilters = () => {
     minNumberOfEmployees: [],
   });
 
+  // handler for filtering
   const handleRoleFilterChange = (event, value, type) => {
-    console.log("*******", value, event.id);
     switch (type) {
       case "role":
         setSelectedFilters({
           ...selectedFilter,
-          jobRole: value.map((val) => val.subgroup),
+          jobRole: [
+            ...selectedFilter.jobRole,
+            ...value.map((val) => val.subgroup),
+          ].filter(Boolean),
         });
         break;
       case "experience":
-        console.log(value);
         setSelectedFilters({
           ...selectedFilter,
           minExp: value,
@@ -111,21 +61,18 @@ const SearchBarFilters = () => {
           ...selectedFilter,
           minJdSalary: value ? Number(value.split("K")[0]) : null,
         });
-        console.log(value);
         break;
       case "location":
         setSelectedFilters({
           ...selectedFilter,
           location: value,
         });
-        console.log(value);
         break;
       case "remote":
         setSelectedFilters({
           ...selectedFilter,
           remote: value,
         });
-        console.log(value);
         break;
       case "numberEmployees":
         setSelectedFilters({
@@ -134,7 +81,6 @@ const SearchBarFilters = () => {
             .map((val) => Number(val.split("-")[1]))
             .sort(),
         });
-        console.log(value);
         break;
       case "companyName":
         setSelectedFilters({
@@ -153,15 +99,56 @@ const SearchBarFilters = () => {
 
   return (
     <>
-      <Typography>Search Jobs</Typography>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} justifyContent="center">
+        <Badge
+          badgeContent={947}
+          max={1000}
+          sx={{
+            "& .MuiBadge-badge": {
+              color: "white",
+              backgroundColor: "#1976d2",
+              fontWeight: 500,
+              right: "-8px",
+              top: "-4px",
+            },
+          }}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          <Typography fontSize={"16px"} variant="h5">
+            Search Jobs
+          </Typography>
+        </Badge>
+      </Grid>
+      <Grid container mt={2} spacing={2}>
         <Grid item>
           <Autocomplete
             multiple
             size="small"
             value={selectedFilter.jobRole}
+            {...selectedFilter}
             onChange={(event, value) =>
               handleRoleFilterChange(event, value, "role")
+            }
+            clearIcon={
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedFilters({ ...selectedFilter, jobRole: [] });
+                }}
+              >
+                <svg
+                  height="14"
+                  width="14"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
+                </svg>
+              </div>
             }
             popupIcon={
               <svg
@@ -170,9 +157,10 @@ const SearchBarFilters = () => {
                 viewBox="0 0 20 20"
                 aria-hidden="true"
                 focusable="false"
+                class="css-8mmkcg"
               >
                 <path
-                  fill="rgb(204, 204, 204)"
+                  fill="rgb(204,204,204)"
                   d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
                 ></path>
               </svg>
@@ -190,33 +178,23 @@ const SearchBarFilters = () => {
               gap: "8px",
             }}
             renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Roles"
-                // inputProps={{ ...params.inputProps, style: { font } }}
-              />
-            )}
-            rendergroup={(params) => (
-              <li key={params.key}>
-                <GroupHeader>{params.group}</GroupHeader>
-                <GroupItems>
-                  {params.children.map((option) => (
-                    <li
-                      key={option.key}
-                      onClick={() => console.log(option.subgroup)}
-                    >
-                      {option.subgroup}
-                    </li>
-                  ))}
-                </GroupItems>
-              </li>
+              <TextField sx={{ fontSize: "10px" }} {...params} label="Roles" />
             )}
             renderTags={(value, getTagProps) => {
-              value.map((option, index) => (
+              return value.map((option, index) => (
                 <Chip
-                  // key={index}
+                  size="small"
+                  key={index}
                   label={option}
                   {...getTagProps({ index })}
+                  onDelete={() => {
+                    setSelectedFilters({
+                      ...selectedFilter,
+                      jobRole: selectedFilter.jobRole.filter(
+                        (role) => role !== option
+                      ),
+                    });
+                  }}
                   deleteIcon={
                     <svg
                       height="14"
@@ -225,10 +203,7 @@ const SearchBarFilters = () => {
                       aria-hidden="true"
                       focusable="false"
                     >
-                      <path
-                        fill="rgb(204, 204, 204)"
-                        d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"
-                      ></path>
+                      <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
                     </svg>
                   }
                   sx={{
@@ -237,30 +212,18 @@ const SearchBarFilters = () => {
                     borderRadius: "4px",
                     backgroundColor: "#e0e0e0",
                     "& .MuiChip-deleteIcon": {
-                      color: "transparent", // Change color of the delete icon (cross button) to orange
+                      color: "transparent",
                     },
                     "& .MuiChip-deleteIcon:hover": {
-                      backgroundColor: "orangered", // Remove background color on hover
+                      backgroundColor: "orangered",
                     },
                     "& .MuiChip-deleteIcon.Mui-disabled": {
-                      display: "none", // Hide the delete icon when disabled
+                      display: "none",
                     },
-                  }} // Customize chip styles here
+                  }}
                 />
               ));
             }}
-          />
-        </Grid>
-        <Grid item>
-          <TextField
-            size="small"
-            id="location"
-            label="Location"
-            variant="outlined"
-            value={selectedFilter.location}
-            onChange={(event, value) =>
-              handleRoleFilterChange(event, event.target.value, "location")
-            }
           />
         </Grid>
         <Grid item>
@@ -280,13 +243,13 @@ const SearchBarFilters = () => {
                 class="css-8mmkcg"
               >
                 <path
-                  fill="rgb(204, 204, 204)"
+                  fill="rgb(204,204,204)"
                   d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
                 ></path>
               </svg>
             }
             sx={{
-              minWidth: "121px",
+              minWidth: "140px",
               width: "auto",
               minHeight: "38px",
               borderRadius: "4px",
@@ -294,15 +257,21 @@ const SearchBarFilters = () => {
               gap: "8px",
             }}
             renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Experience"
-                inputProps={{
-                  ...params.inputProps,
-                  style: { fontSize: "1rem" },
-                }}
-              />
+              <TextField {...params} label="Experience" />
             )}
+          />
+        </Grid>
+        <Grid item>
+          <TextField
+            sx={{width:'140px'}}
+            size="small"
+            id="location"
+            label="Location"
+            variant="outlined"
+            value={selectedFilter.location}
+            onChange={(event, value) =>
+              handleRoleFilterChange(event, event.target.value, "location")
+            }
           />
         </Grid>
         <Grid item>
@@ -323,7 +292,7 @@ const SearchBarFilters = () => {
                 class="css-8mmkcg"
               >
                 <path
-                  fill="rgb(204, 204, 204)"
+                  fill="rgb(204,204,204)"
                   d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
                 ></path>
               </svg>
@@ -340,6 +309,7 @@ const SearchBarFilters = () => {
             renderTags={(value, getTagProps) =>
               value.map((option, index) => (
                 <Chip
+                  size="small"
                   label={option}
                   {...getTagProps({ index })}
                   deleteIcon={
@@ -350,10 +320,7 @@ const SearchBarFilters = () => {
                       aria-hidden="true"
                       focusable="false"
                     >
-                      <path
-                        fill="rgb(204, 204, 204)"
-                        d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"
-                      ></path>
+                      <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
                     </svg>
                   }
                   sx={{
@@ -391,9 +358,10 @@ const SearchBarFilters = () => {
                 viewBox="0 0 20 20"
                 aria-hidden="true"
                 focusable="false"
+                class="css-8mmkcg"
               >
                 <path
-                  fill="rgb(204, 204, 204)"
+                  fill="rgb(204,204,204)"
                   d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
                 ></path>
               </svg>
@@ -418,7 +386,7 @@ const SearchBarFilters = () => {
             variant="outlined"
             value={selectedFilter.companyName}
             onChange={(event, value) =>
-              handleRoleFilterChange(event, value, "companyName")
+              handleRoleFilterChange(event, event.target.value, "companyName")
             }
           />
         </Grid>

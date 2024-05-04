@@ -1,6 +1,6 @@
-// reducers.js
 import { UPDATE_FILTERS } from "./actions";
 
+//initial state for filtering
 const initialState = {
   data: null,
   offset: null,

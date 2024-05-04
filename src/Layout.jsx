@@ -1,7 +1,7 @@
 import { Box, Grid } from "@mui/material";
 import React from "react";
-import SearchBarFilters from "./SearchBarFilters";
-import JobCard from "./JobCard";
+import SearchBarFilters from "./components/SearchBarFilters";
+import JobCard from "./components/JobCard";
 
 const Layout = () => {
   return (
